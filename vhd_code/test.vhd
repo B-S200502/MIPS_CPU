@@ -26,9 +26,7 @@ begin
     x <= x_in;
     y <= y_in;
 
-    --------------------------------------------------------------------
     -- Arithmetic unit
-    --------------------------------------------------------------------
     process(x, y, add_sub)
         variable temp      : signed(3 downto 0);
         variable x_signed  : signed(3 downto 0);
@@ -50,9 +48,7 @@ begin
         arith_result <= std_logic_vector(temp);
     end process;
 
-    --------------------------------------------------------------------
     -- Logic unit
-    --------------------------------------------------------------------
     process(x, y, logic_func)
     begin
         case logic_func is
@@ -64,9 +60,7 @@ begin
         end case;
     end process;
 
-    --------------------------------------------------------------------
     -- Set Less Than unit
-    --------------------------------------------------------------------
     process(x, y)
     begin
         if signed(x) < signed(y) then
@@ -77,9 +71,7 @@ begin
         end if;
     end process;
 
-    --------------------------------------------------------------------
     -- Main output multiplexer + flags
-    --------------------------------------------------------------------
     process(func, arith_result, logic_result, slt_result, y)
     begin
         case func is
