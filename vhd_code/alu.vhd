@@ -80,7 +80,7 @@ begin
 
     -- flags
     overflow <= temp_overflow;
-    if internal_result = (others => '0') then
+    if internal_result = x"00000000" then
       zero <= '1';
     else
       zero <= '0';
