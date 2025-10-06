@@ -1,49 +1,54 @@
 vsim work.regfile_wrapper
 add wave -r /*
 
--- Clock generation (10 time unit period, 50% duty cycle)
+-- Clock: 10 time unit period (edges at 5, 15, 25, ...)
 force clk 0 0, 1 5 -repeat 10
 
--- Phase 1: Apply and release reset
+-- Initialize all inputs to known values at t=0
 force reset 1
-run 2
+force write 0
+force din_in "0000"
+force read_a_in "00"
+force read_b_in "00"
+force write_address_in "00"
+
+-- Let reset settle before the first rising edge at t=5
+run 4      ;# now at t=4
 force reset 0
-run 2
+run 2      ;# crosses rising edge at t=5; still no writes (write=0)
 
--- Phase 2: Write operations (write enable active)
+-- Write 0b1010 to address 0 (make signals stable before the next rising edge)
 force write 1
+force din_in "1010"
+force write_address_in "00"
+run 10     ;# covers a full period so write is captured at rising edge t=15
 
--- Write 0b1010 to register 0
-force din_in 4'b1010
-force write_address_in 2'b00
-run 2
+-- Write 0b1100 to address 1
+force din_in "1100"
+force write_address_in "01"
+run 10     ;# captured at next rising edge t=25
 
--- Write 0b1100 to register 1
-force din_in 4'b1100
-force write_address_in 2'b01
-run 2
-
--- Disable writing
+-- Disable writes
 force write 0
 run 2
 
--- Phase 3: Read from registers 0 and 1
-force read_a_in 2'b00
-force read_b_in 2'b01
-run 2
+-- Read back A=0, B=1
+force read_a_in "00"
+force read_b_in "01"
+run 10
 
--- Read from registers 2 and 3 (expected zeros)
-force read_a_in 2'b10
-force read_b_in 2'b11
-run 2
+-- Read locations 2 and 3 (expect 0s)
+force read_a_in "10"
+force read_b_in "11"
+run 10
 
--- Phase 4: Reset again to clear registers
+-- Reset to clear registers
 force reset 1
-run 2
+run 4
 force reset 0
-run 2
+run 6
 
--- Read again after reset (should be zeros)
-force read_a_in 2'b00
-force read_b_in 2'b01
-run 2
+-- After reset, reading 0 and 1 should be 0s
+force read_a_in "00"
+force read_b_in "01"
+run 10
