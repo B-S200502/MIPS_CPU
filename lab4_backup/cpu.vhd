@@ -4,12 +4,13 @@ use IEEE.std_logic_signed.all;
 
 entity cpu is
     port (
-        reset_cpu          : in  std_logic;
-        clk_cpu            : in  std_logic;
-        rs_out, rt_out     : out std_logic_vector(3 downto 0) := (others => '0'); -- output ports from register file
-        pc_out             : out std_logic_vector(3 downto 0) := (others => '0');
-        overflow_cpu,
-        zero_cpu           : out std_logic
+        reset    : in  std_logic;
+        clk      : in  std_logic;
+        rs_out   : out std_logic_vector(3 downto 0) := (others => '0'); -- output ports from register file
+        rt_out   : out std_logic_vector(3 downto 0) := (others => '0');
+        pc_out   : out std_logic_vector(3 downto 0) := (others => '0');
+        overflow : out std_logic;
+        zero     : out std_logic
     );
 end cpu;
 
@@ -63,9 +64,9 @@ architecture Behaviour of cpu is
     -- Sign Extender
     component sign_ext
         port(
-            input16     : in  std_logic_vector(15 downto 0);
-            func_slct   : in  std_logic_vector(1 downt0 0);
-            output32    : out std_logic_vector(31 downto 0)
+            input16   : in  std_logic_vector(15 downto 0);
+            func_slct : in  std_logic_vector(1 downto 0);
+            output32  : out std_logic_vector(31 downto 0)
         );
     end component;
 
@@ -110,20 +111,20 @@ architecture Behaviour of cpu is
 
     signal reg_addr_in : std_logic_vector(4 downto 0) := (others => '0');
 
-    signal pc_choice, branch_t   : std_logic_vector(1 downto 0) := "00";
-    signal alu_func, alu_lofunc  : std_logic_vector(1 downto 0) := "00";
+    signal pc_choice, branch_t  : std_logic_vector(1 downto 0) := "00";
+    signal alu_func, alu_lofunc : std_logic_vector(1 downto 0) := "00";
 
     signal alu_addsub, dc_write,
            reg_write, reg_dst,
-           alu_src, reg_in_src   : std_logic := '0';
+           alu_src, reg_in_src  : std_logic := '0';
 
-    signal opcode, func          : std_logic_vector(5 downto 0) := (others => '0');
-    signal ctrl_sig              : std_logic_vector(13 downto 0);
+    signal opcode, func         : std_logic_vector(5 downto 0) := (others => '0');
+    signal ctrl_sig             : std_logic_vector(13 downto 0);
 
 begin
 
     -- control unit with all cases taken into consideration
-    process(ic_out, clk_cpu, reset_cpu, opcode, func, ctrl_sig)
+    process(ic_out, clk, reset, opcode, func, ctrl_sig)
     begin
         opcode <= ic_out(31 downto 26);
         func   <= ic_out(5 downto 0);
@@ -171,8 +172,8 @@ begin
     PC : pc_register
         port map(
             address => next_pc_out,
-            reset   => reset_cpu,
-            clk     => clk_cpu,
+            reset   => reset,
+            clk     => clk,
             pc_out  => pc_o
         );
 
@@ -196,8 +197,8 @@ begin
     R_File : regfile_32
         port map(
             din           => reg_in,
-            reset         => reset_cpu,
-            clk           => clk_cpu,
+            reset         => reset,
+            clk           => clk,
             write_en      => reg_write,
             read_a        => ic_out(25 downto 21),
             read_b        => ic_out(20 downto 16),
@@ -221,15 +222,15 @@ begin
             logic_func => alu_lofunc,
             func       => alu_func,
             output     => alu_out,
-            overflow   => overflow_cpu,
-            zero       => zero_cpu
+            overflow   => overflow,
+            zero       => zero
         );
 
     DCache : d_cache
         port map(
             d_in       => b_out,
-            reset      => reset_cpu,
-            clk        => clk_cpu,
+            reset      => reset,
+            clk        => clk,
             dest_reg   => alu_out(4 downto 0),
             data_write => dc_write,
             d_out      => dc_out
