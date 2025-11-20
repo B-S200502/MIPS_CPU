@@ -14,28 +14,29 @@ begin
     process(address)
     begin
         case address is
-            -- New test program inspired by TED instructions
+            -- Inspired by the code Ted gave 
+            when "00000" => instruction <= "00111100000000000000000000000000"; -- lui   r0, 0
+            when "00001" => instruction <= "00000000001000100001100000100000"; -- add   r3, r1, r2
+            when "00010" => instruction <= "00000000001000100001100000100010"; -- sub   r3, r1, r2
+            when "00011" => instruction <= "00000000001000100001100000101010"; -- slt   r3, r1, r2
+            when "00100" => instruction <= "00100000001000100000000000001010"; -- addi  r1, r1, 10
+            when "00101" => instruction <= "00101000001000100000000000001010"; -- slti  r1, r1, 10
+            when "00110" => instruction <= "00000000001000100001100000100100"; -- and   r3, r1, r2
+            when "00111" => instruction <= "00000000001000100001100000100101"; -- or    r3, r1, r2
+            when "01000" => instruction <= "00000000001000100001100000100110"; -- xor   r3, r1, r2
+            when "01001" => instruction <= "00000000001000100001100000100111"; -- nor   r3, r1, r2
+            when "01010" => instruction <= "00110000001000100000000000001111"; -- andi  r1, r1, 0xF
+            when "01011" => instruction <= "00110100001000100000000000000001"; -- ori   r1, r1, 1
+            when "01100" => instruction <= "00111000001000100000000000001111"; -- xori  r1, r1, 0xF
+            when "01101" => instruction <= "10001100001000100000000000000100"; -- lw    r1, 4(r0)
+            when "01110" => instruction <= "10101100001000100000000000000100"; -- sw    r1, 4(r0)
+            when "01111" => instruction <= "00001000000000000000000000000100"; -- j     4
+            when "10000" => instruction <= "00000000001000000000000000001000"; -- jr    r1
+            when "10001" => instruction <= "00000100001000000000000000000010"; -- bltz  r1, +2
+            when "10010" => instruction <= "00010000001000100000000000000010"; -- beq   r1, r1, +2
+            when "10011" => instruction <= "00010100001000100000000000000010"; -- bne   r1, r1, +2
 
-            when "00000" => instruction <= "00100000000010000000000000001010"; -- addi r4, r0, 10
-            when "00001" => instruction <= "00100000000010010000000000000101"; -- addi r5, r0, 5
-            when "00010" => instruction <= "00000000101010010110000000100000"; -- add  r6, r5, r5
-            when "00011" => instruction <= "00000000110001000111000000100010"; -- sub  r7, r6, r4
-            when "00100" => instruction <= "00010000111001000000000000000011"; -- beq  r7, r4, +3
-
-            when "00101" => instruction <= "00100000100010000000000000000001"; -- addi r4, r4, 1
-            when "00110" => instruction <= "00001000000000000000000000000010"; -- jump to 2
-
-            when "00111" => instruction <= "10101100000010010000000000000100"; -- sw   r9, 4(r0)
-            when "01000" => instruction <= "10001100000010100000000000000100"; -- lw   r10,4(r0)
-
-            when "01001" => instruction <= "00110001010010100000000000001111"; -- andi r10,r10,0xF
-            when "01010" => instruction <= "00110101010010100000000000000001"; -- ori  r10,r10,0x1
-
-            when "01011" => instruction <= "00000001010010100101100000100110"; -- xor  r11,r10,r10
-            when "01100" => instruction <= "00000001011010110101100000100111"; -- nor  r11,r11,r11
-
-            when others =>
-                instruction <= "00000000000000000000000000000000"; -- don't care
+            when others => instruction <= "00000000000000000000000000000000"; -- don't care
 
         end case;
     end process;
